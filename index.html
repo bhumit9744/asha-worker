@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UMEED - ASHA Worker App</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#E3F2FD',
+                            100: '#BBDEFB',
+                            500: '#2196F3',
+                            600: '#1976D2', // NHM Blue
+                            700: '#1565C0',
+                            800: '#0D47A1',
+                        },
+                        medical: {
+                            bg: '#F8FAFC',
+                            surface: '#FFFFFF',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(25, 118, 210, 0.1)',
+                        'card': '0 10px 40px -10px rgba(0,0,0,0.08)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        heartbeat: {
+                            '0%': { transform: 'scale(1)' },
+                            '14%': { transform: 'scale(1.05)' },
+                            '28%': { transform: 'scale(1)' },
+                            '42%': { transform: 'scale(1.05)' },
+                            '70%': { transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Utilities */
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Hide scrollbar for clean mobile look */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* Particles for Splash */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(25, 118, 210, 0.1);
+            animation: float 8s infinite;
+        }
+        
+        /* Ensure content is hidden initially but not display:none to allow layout calc */
+        .opacity-0-start {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800 h-screen w-full overflow-hidden relative font-sans">
+
+    <!-- =========================
+         PAGE 1: SPLASH SCREEN 
+         ========================= -->
+    <div id="splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-between bg-gradient-to-b from-primary-50 to-white transition-opacity duration-700 ease-out">
+        
+        <!-- Background Particles (Decorative) -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="particle w-24 h-24 top-10 left-[-20px]" style="animation-delay: 0s;"></div>
+            <div class="particle w-16 h-16 top-1/3 right-[-10px]" style="animation-delay: 2s;"></div>
+            <div class="particle w-32 h-32 bottom-20 left-10" style="animation-delay: 4s;"></div>
+        </div>
+
+        <div class="flex-1 flex flex-col items-center justify-center w-full relative z-10">
+            <!-- Logo Container -->
+            <div class="relative mb-6">
+                <!-- Radial Glow -->
+                <div class="absolute inset-0 bg-blue-400 rounded-full blur-2xl opacity-20 transform scale-150"></div>
+                
+                <!-- Logo Circle -->
+                <div class="w-32 h-32 bg-white rounded-full shadow-soft flex items-center justify-center animate-heartbeat relative z-10">
+                    <!-- Custom SVG Logo: House + Heart + Cross -->
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary-600">
+                        <!-- House Outline -->
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <!-- Heart inside -->
+                        <path d="M12 18.5l-1.45-1.32C5.4 12.36 2.5 9.8 2.5 6.7 2.5 4.18 4.48 2.2 7 2.2c1.41 0 2.75.69 3.5 1.77.75-1.08 2.09-1.77 3.5-1.77 2.52 0 4.5 1.98 4.5 4.5 0 3.1-2.9 5.66-8.05 10.48L12 18.5z" transform="scale(0.4) translate(28, 30)" fill="#1976D2" stroke="none" class="opacity-10"></path>
+                        <!-- Medical Cross inside -->
+                        <path d="M12 8v8M8 12h8" stroke="#1976D2" stroke-width="2.5" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- App Name & Tagline -->
+            <div class="text-center space-y-2">
+                <h1 class="text-4xl font-bold text-primary-600 tracking-tight">UMEED</h1>
+                <p class="text-sm font-medium text-gray-500 tracking-wide uppercase">Smart Care. Safer Communities.</p>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div class="mt-8 flex space-x-2">
+                <div class="w-2 h-2 bg-primary-600 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-primary-200 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="pb-10 text-center z-10">
+            <div class="flex items-center justify-center space-x-2 mb-1">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="Gov" class="h-8 opacity-80 grayscale">
+            </div>
+            <p class="text-xs font-semibold text-gray-500">POWERED BY NHM</p>
+            <p class="text-[10px] text-gray-400 mt-1">Version 1.0.4</p>
+        </div>
+    </div>
+
+    <!-- =========================
+         PAGE 2: LOGIN SCREEN 
+         ========================= -->
+    <!-- Removed 'hidden' and handled visibility via opacity/pointer-events for smoother transition -->
+    <div id="login-screen" class="absolute inset-0 h-full flex flex-col opacity-0 pointer-events-none transition-opacity duration-700 bg-slate-50">
+        
+        <!-- Simple Top Header -->
+        <header class="pt-6 px-6 pb-4 flex justify-between items-center bg-transparent z-20">
+            <!-- Logo Section -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-primary-600">
+                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-plus"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M8 11h8"/><path d="M12 7v8"/></svg>
+                </div>
+                <span class="text-xl font-bold text-slate-900 tracking-tight">UMEED</span>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center gap-3">
+                <button class="text-primary-600 p-1 hover:bg-blue-50 rounded-full transition"><i data-lucide="help-circle" class="w-6 h-6"></i></button>
+                <button class="text-primary-600 p-1 hover:bg-blue-50 rounded-full transition"><i data-lucide="info" class="w-6 h-6"></i></button>
+                
+                <!-- Language Dropdown -->
+                <div class="relative">
+                    <button id="lang-btn" class="flex items-center gap-1 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition">
+                        <i data-lucide="globe" class="w-3.5 h-3.5 text-gray-500"></i>
+                        <span id="current-lang">English</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200" id="lang-arrow"></i>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="lang-dropdown" class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-lg border border-gray-100 hidden z-50 overflow-hidden origin-top-right transition-all duration-200">
+                        <button class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-primary-600 transition flex items-center justify-between lang-option" data-lang="English">
+                            <span>English</span>
+                            <i data-lucide="check" class="w-3 h-3 text-primary-600 opacity-100 check-icon"></i>
+                        </button>
+                        <button class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-primary-600 transition flex items-center justify-between lang-option" data-lang="Hindi">
+                            <span>हिंदी</span>
+                            <i data-lucide="check" class="w-3 h-3 text-primary-600 opacity-0 check-icon"></i>
+                        </button>
+                        <button class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-primary-600 transition flex items-center justify-between lang-option" data-lang="Marathi">
+                            <span>मराठी</span>
+                            <i data-lucide="check" class="w-3 h-3 text-primary-600 opacity-0 check-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- Scrollable Content Area -->
+        <main class="flex-1 overflow-y-auto px-6 pt-2 pb-6">
+            
+            <!-- Welcome Headings -->
+            <div class="mb-8 mt-2">
+                <h2 class="text-[28px] font-bold text-slate-900 leading-tight">Welcome Back</h2>
+                <p class="text-slate-500 text-[15px] mt-2 leading-relaxed max-w-[85%]">Enter your details to access family health records.</p>
+            </div>
+
+            <!-- Main Auth Card -->
+            <div class="bg-white rounded-[24px] shadow-card p-6 relative overflow-hidden border border-slate-100">
+                <!-- Decorative blurred blob inside card -->
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-60"></div>
+
+                <!-- Top Icon -->
+                <div class="flex flex-col items-center mb-6">
+                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-primary-600 mb-4 shadow-sm border border-blue-50">
+                        <i data-lucide="briefcase-medical" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">AshaWorker Connect</h3>
+                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mt-1">Authentication Portal</p>
+                </div>
+
+                <!-- Form -->
+                <form id="login-form" class="space-y-5">
+                    
+                    <!-- Worker ID Input -->
+                    <div class="space-y-1.5">
+                        <label class="text-sm font-bold text-slate-700">Worker ID</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-600 transition-colors">
+                                <i data-lucide="id-card" class="w-5 h-5"></i>
+                            </div>
+                            <input type="text" id="worker-id" class="block w-full pl-11 pr-4 py-3.5 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none font-medium bg-slate-50/50 focus:bg-white" placeholder="Enter your ID">
+                        </div>
+                    </div>
+
+                    <!-- PIN Input -->
+                    <div class="space-y-1.5">
+                        <label class="text-sm font-bold text-slate-700">PIN</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary-600 transition-colors">
+                                <i data-lucide="lock" class="w-5 h-5"></i>
+                            </div>
+                            <!-- type="password" to hide -->
+                            <input type="password" id="pin-input" maxlength="6" inputmode="numeric" class="block w-full pl-11 pr-12 py-3.5 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all outline-none font-medium bg-slate-50/50 focus:bg-white tracking-widest" placeholder="Enter 6-digit PIN">
+                            
+                            <!-- Toggle Visibility -->
+                            <button type="button" id="toggle-pin" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-primary-600 cursor-pointer">
+                                <i data-lucide="eye" id="eye-icon" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-2">
+                        <button type="submit" id="login-btn" class="w-full bg-[#1976D2] hover:bg-[#1565C0] active:scale-[0.98] text-white font-semibold py-4 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 flex items-center justify-center gap-2">
+                            <span>Log In</span>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Forgot PIN Link -->
+            <div class="text-center mt-6">
+                <button onclick="alert('Please contact your district supervisor to reset your PIN.')" class="text-sm font-medium text-primary-600 hover:text-primary-800 transition">
+                    Forgot PIN? Contact Supervisor
+                </button>
+            </div>
+
+        </main>
+
+        <!-- Bottom Footer -->
+        <footer class="pb-6 text-center">
+            <p class="text-[11px] font-medium text-slate-400">v1.0.4 • Build 2024.10</p>
+        </footer>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // Start Initialization
+        function initApp() {
+            // Initialize Icons immediately
+            lucide.createIcons();
+
+            const splash = document.getElementById('splash-screen');
+            const login = document.getElementById('login-screen');
+
+            // Wait 2 seconds then transition
+            setTimeout(() => {
+                // Fade out splash
+                splash.classList.add('opacity-0');
+                
+                // Show login visually
+                login.classList.remove('opacity-0', 'pointer-events-none');
+                
+                // Remove splash from layout completely after transition
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 700); 
+            }, 2000); 
+        }
+
+        // Run Init safely
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+
+        // --- UI LOGIC ---
+
+        // LANGUAGE SELECTOR LOGIC
+        const langBtn = document.getElementById('lang-btn');
+        const langDropdown = document.getElementById('lang-dropdown');
+        const langArrow = document.getElementById('lang-arrow');
+        const currentLangSpan = document.getElementById('current-lang');
+        const langOptions = document.querySelectorAll('.lang-option');
+
+        if(langBtn && langDropdown) {
+            // Toggle dropdown
+            langBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                langDropdown.classList.toggle('hidden');
+                langArrow.classList.toggle('rotate-180');
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                    langDropdown.classList.add('hidden');
+                    langArrow.classList.remove('rotate-180');
+                }
+            });
+
+            // Handle Selection
+            langOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const lang = option.getAttribute('data-lang');
+                    currentLangSpan.textContent = lang;
+                    
+                    // Update checkmarks
+                    langOptions.forEach(opt => {
+                        const check = opt.querySelector('.check-icon');
+                        if(check) check.classList.add('opacity-0');
+                    });
+                    const selectedCheck = option.querySelector('.check-icon');
+                    if(selectedCheck) selectedCheck.classList.remove('opacity-0');
+
+                    // Close dropdown
+                    langDropdown.classList.add('hidden');
+                    langArrow.classList.remove('rotate-180');
+                });
+            });
+        }
+
+        // PIN VISIBILITY TOGGLE
+        const pinInput = document.getElementById('pin-input');
+        const toggleBtn = document.getElementById('toggle-pin');
+        const eyeIcon = document.getElementById('eye-icon');
+
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // prevent focus loss
+                if(pinInput.type === 'password') {
+                    pinInput.type = 'text';
+                    eyeIcon.setAttribute('data-lucide', 'eye-off');
+                    pinInput.classList.remove('tracking-widest'); 
+                } else {
+                    pinInput.type = 'password';
+                    eyeIcon.setAttribute('data-lucide', 'eye');
+                    pinInput.classList.add('tracking-widest'); 
+                }
+                lucide.createIcons();
+            });
+        }
+
+        // FORM SUBMISSION MOCK LOGIC
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.getElementById('login-btn');
+        const workerIdInput = document.getElementById('worker-id');
+
+        if(loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const idVal = workerIdInput.value;
+                const pinVal = pinInput.value;
+
+                if(!idVal || !pinVal) {
+                    // Simple shake animation on inputs if empty
+                    if(!idVal) workerIdInput.parentElement.classList.add('animate-pulse');
+                    if(!pinVal) pinInput.parentElement.classList.add('animate-pulse');
+                    setTimeout(() => {
+                        workerIdInput.parentElement.classList.remove('animate-pulse');
+                        pinInput.parentElement.classList.remove('animate-pulse');
+                    }, 500);
+                    return;
+                }
+
+                // Loading State
+                const originalText = loginBtn.innerHTML;
+                loginBtn.innerHTML = `<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>`;
+                loginBtn.disabled = true;
+                loginBtn.classList.add('opacity-80');
+
+                // Mock API Call
+                setTimeout(() => {
+                    loginBtn.innerHTML = `<span>Success!</span> <i data-lucide="check" class="w-5 h-5"></i>`;
+                    loginBtn.classList.remove('bg-[#1976D2]', 'hover:bg-[#1565C0]');
+                    loginBtn.classList.add('bg-green-600');
+                    lucide.createIcons();
+
+                    setTimeout(() => {
+                        alert(`Welcome back, Worker ${idVal}! \nRedirecting to dashboard...`);
+                        // Reset button
+                        loginBtn.innerHTML = originalText;
+                        loginBtn.disabled = false;
+                        loginBtn.classList.remove('opacity-80', 'bg-green-600');
+                        loginBtn.classList.add('bg-[#1976D2]');
+                        workerIdInput.value = '';
+                        pinInput.value = '';
+                    }, 800);
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
